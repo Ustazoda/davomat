@@ -256,3 +256,6 @@ if __name__ == '__main__':
     # The host '0.0.0.0' makes it accessible on your network
     # The port 8000 matches what's in index.html
     socketio.run(app, host='0.0.0.0', port=8000, debug=True, use_reloader=True)
+
+
+# salom
