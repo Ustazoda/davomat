@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darsga Ro'yxatdan O'tish</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f4f4f4;
+        }
+        main {
+            flex: 1 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .registration-card {
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+        }
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+        .btn {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .error-message {
+            color: red;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .success-message {
+            color: green;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="card registration-card z-depth-2">
+            <h4 class="card-title center-align">Darsga Ro'yxatdan O'tish</h4>
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+            {% if message %}
+                <p class="success-message">{{ message }}</p>
+            {% else %}
+                <form method="POST" action="{{ url_for('student_register_route', lesson_id=lesson_id, qr_token=qr_token) }}">
+                    <div class="input-field">
+                        <i class="material-icons prefix">account_circle</i>
+                        <input id="student_name" name="student_name" type="text" class="validate" required>
+                        <label for="student_name">Ismingiz</label>
+                    </div>
+                    <div class="input-field">
+                        <i class="material-icons prefix">account_circle</i>
+                        <input id="student_family_name" name="student_family_name" type="text" class="validate" required>
+                        <label for="student_family_name">Familiyangiz</label>
+                    </div>
+                    <div class="input-field">
+                        <i class="material-icons prefix">group</i>
+                        <input id="student_group" name="student_group" type="text" class="validate" required>
+                        <label for="student_group">Guruhingiz</label>
+                    </div>
+                    <!-- Hidden fields to pass lesson_id and qr_token if needed, though they are in URL -->
+                    <!-- <input type="hidden" name="lesson_id" value="{{ lesson_id }}"> -->
+                    <!-- <input type="hidden" name="qr_token" value="{{ qr_token }}"> -->
+                    <button class="btn waves-effect waves-light light-blue darken-1" type="submit" name="action">
+                        Ro'yxatdan O'tish
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            {% endif %}
+             {% if not message and not error %}
+                <p style="text-align: center; margin-top: 20px;">
+                    <a href="{{ url_for('teacher_dashboard') }}">O'qituvchi paneliga qaytish</a>
+                </p>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        M.AutoInit();
+    </script>
+</body>
+</html>

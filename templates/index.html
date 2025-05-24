@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darsni Ro'yxatga Olish (O'qituvchi)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        main {
+            flex: 1 0 auto;
+            padding: 20px 0;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card-panel {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .input-field label {
+            color: #2196f3;
+        }
+        .input-field input[type=text]:focus + label {
+            color: #2196f3 !important;
+        }
+        .input-field input[type=text]:focus {
+            border-bottom: 1px solid #2196f3 !important;
+            box-shadow: 0 1px 0 0 #2196f3 !important;
+        }
+        .btn {
+            background-color: #2196f3;
+        }
+        .btn:hover {
+            background-color: #1976d2;
+        }
+        .qr-code-container {
+            background-color: #bbdefb;
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            color: #424242;
+            border-radius: 4px;
+            box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20);
+        }
+        .qr-code-image {
+            max-width: 90%;
+            max-height: 90%;
+            display: block;
+            margin: auto;
+        }
+        table {
+            background-color: white;
+        }
+        th {
+            background-color: #e3f2fd;
+            color: #424242;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="light-blue darken-1">
+            <div class="nav-wrapper container">
+                <a href="#" class="brand-logo">Darsni Ro'yxatga Olish</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="#"><i class="material-icons left">account_circle</i>O'qituvchi</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6">
+                    <div class="card-panel z-depth-1">
+                        <h5>O'qituvchi ma'lumotlari</h5>
+                        <div class="input-field">
+                            <i class="material-icons prefix">person</i>
+                            <input id="teacher_name" type="text" class="validate">
+                            <label for="teacher_name">Ism</label>
+                        </div>
+                        <div class="input-field">
+                            <i class="material-icons prefix">person_outline</i>
+                            <input id="teacher_family_name" type="text" class="validate">
+                            <label for="teacher_family_name">Familiya</label>
+                        </div>
+                        <div class="input-field">
+                            <i class="material-icons prefix">book</i>
+                            <input id="lesson_name" type="text" class="validate">
+                            <label for="lesson_name">Dars nomi</label>
+                        </div>
+                        <button class="btn waves-effect waves-light" id="create_journal_btn">
+                            Jurnal yaratish
+                            <i class="material-icons right">send</i>
+                        </button>
+                        <p id="status_message" class="red-text"></p>
+                    </div>
+
+                    <div class="card-panel z-depth-1">
+                        <div class="row valign-wrapper" style="margin-bottom: 0;">
+                            <div class="col s6">
+                                <h5>Talabalar ro'yxati</h5>
+                            </div>
+                            <div class="col s6 right-align">
+                                <span style="font-weight: bold;">Dars ID:</span> <span id="lesson_id">---</span>
+                            </div>
+                        </div>
+                        <table class="striped">
+                            <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th>Talaba ismi</th>
+                                    <th>Talaba Familiyasi</th>
+                                    <th>Talaba Guruhi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students_list_body">
+                                <tr><td colspan="4" class="center-align">Hali hech qanday talaba ro'yxatga olinmadi.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col s12 m6">
+                    <div class="card-panel z-depth-1 qr-code-container">
+                        <img src="https://via.placeholder.com/250x250?text=QR+kod+kutilmoqda" alt="Generated QR Code" class="qr-code-image" id="qr_code_image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="page-footer light-blue darken-1">
+        <div class="footer-copyright">
+            <div class="container">
+                © 2024 Dars Ro'yxati Tizimi
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            M.AutoInit();
+
+            const teacherNameInput = document.getElementById('teacher_name');
+            const teacherFamilyNameInput = document.getElementById('teacher_family_name');
+            const lessonNameInput = document.getElementById('lesson_name');
+            const createJournalBtn = document.getElementById('create_journal_btn');
+            const lessonIdSpan = document.getElementById('lesson_id');
+            const qrCodeImage = document.getElementById('qr_code_image');
+            const studentsListBody = document.getElementById('students_list_body');
+            const statusMessage = document.getElementById('status_message');
+
+            let currentLessonId = null; // Aktiv dars IDsi
+
+            // WebSocket ulanishini o'rnatish
+            const socket = io('http://localhost:8000'); // Server manzilingizga bog'liq
+
+            socket.on('connect', () => {
+                console.log('Socket.IO ga ulanildi!');
+                if (currentLessonId) {
+                    socket.emit('join_lesson_session', { lesson_id: currentLessonId });
+                }
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Socket.IO dan uzildi.');
+            });
+
+            // Backenddan kelgan yangi QR kod va talabalar ro'yxatini qabul qilish
+            socket.on('qr_code_updated', (data) => {
+                console.log('QR kod yangilandi:', data);
+                if (data.lesson_id === currentLessonId) {
+                    updateQrCode(data.new_qr_code_base64);
+                    updateStudentsList(data.students_list);
+                    M.toast({html: 'Yangi talaba ro\'yxatga olindi va QR kod yangilandi!'});
+                }
+            });
+
+            // QR kodni yangilash funksiyasi
+            function updateQrCode(newQrCodeBase64) {
+                if (qrCodeImage) {
+                    qrCodeImage.src = `data:image/png;base64,${newQrCodeBase64}`;
+                }
+            }
+
+            // Talabalar ro'yxatini yangilash funksiyasi
+            function updateStudentsList(students) {
+                if (studentsListBody) {
+                    studentsListBody.innerHTML = '';
+                    if (students && students.length > 0) {
+                        students.forEach((student, index) => {
+                            const row = `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${student.name || 'Noma\'lum'}</td>
+                                    <td>${student.family_name || 'Noma\'lum'}</td>
+                                    <td>${student.group || 'Noma\'lum'}</td>
+                                </tr>
+                            `;
+                            studentsListBody.insertAdjacentHTML('beforeend', row);
+                        });
+                    } else {
+                        studentsListBody.innerHTML = '<tr><td colspan="4" class="center-align">Hali hech qanday talaba ro\'yxatga olinmadi.</td></tr>';
+                    }
+                }
+            }
+
+            createJournalBtn.addEventListener('click', async () => {
+                const teacherName = teacherNameInput.value.trim();
+                const teacherFamilyName = teacherFamilyNameInput.value.trim();
+                const lessonName = lessonNameInput.value.trim();
+
+                if (!teacherName || !teacherFamilyName || !lessonName) {
+                    statusMessage.textContent = "Iltimos, barcha maydonlarni to'ldiring.";
+                    return;
+                }
+                statusMessage.textContent = "";
+
+                try {
+                    const response = await fetch('/create_journal', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            teacher_name: teacherName,
+                            teacher_family_name: teacherFamilyName,
+                            lesson_name: lessonName
+                        }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        currentLessonId = result.lesson_id; // Aktiv dars IDni saqlash
+                        lessonIdSpan.textContent = currentLessonId;
+                        updateQrCode(result.initial_qr_code_base64);
+                        statusMessage.textContent = result.message;
+                        statusMessage.classList.remove('red-text');
+                        statusMessage.classList.add('green-text');
+                        updateStudentsList([]); // Yangi jurnal yaratilganda ro'yxatni tozalash
+
+                        // Yangi jurnal yaratilganda Socket.IO xonasiga qo'shilish
+                        if (socket.connected) {
+                            socket.emit('join_lesson_session', { lesson_id: currentLessonId });
+                        }
+                        
+                        // Jurnal yaratilgandan so'ng, davomat ro'yxatini yuklash (agar oldindan davomat bo'lsa)
+                        fetchLessonDetails(currentLessonId);
+
+                    } else {
+                        statusMessage.textContent = `Xato: ${result.error || 'Noma\'lum xato yuz berdi.'}`;
+                        statusMessage.classList.remove('green-text');
+                        statusMessage.classList.add('red-text');
+                    }
+                } catch (error) {
+                    console.error('Jurnal yaratishda xato:', error);
+                    statusMessage.textContent = 'Server bilan bog\'lanishda xato yuz berdi.';
+                    statusMessage.classList.remove('green-text');
+                    statusMessage.classList.add('red-text');
+                }
+            });
+
+            // Dars detallarini (shu jumladan talabalar ro'yxatini) yuklash funksiyasi
+            async function fetchLessonDetails(lessonId) {
+                try {
+                    const response = await fetch(`/lesson_session/${lessonId}`);
+                    const data = await response.json();
+                    if (response.ok) {
+                        updateStudentsList(data.attendances);
+                    } else {
+                        console.error('Dars detallarini yuklashda xato:', data.error);
+                    }
+                } catch (error) {
+                    console.error('Dars detallarini yuklashda tarmoq xatosi:', error);
+                }
+            }
+
+            // Sahifa yuklanganda, agar oldingi jurnal yaratilgan bo'lsa, davomatni yuklash
+            // Bu qism session storage yoki local storage bilan bog'liq bo'lishi mumkin.
+            // Hozircha bu funksionallikni to'liq implementatsiya qilmadik.
+            // Agar sahifa yangilansa, o'qituvchi yana jurnal yaratishi kerak bo'ladi.
+            // Agar avtomatik yuklashni xohlasangiz, lesson_idni local storage ga saqlashingiz kerak.
+        });
+    </script>
+</body>
+</html>
