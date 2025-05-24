@@ -6,6 +6,8 @@
     <title>Darsni Ro'yxatga Olish (O'qituvchi)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="{{url_for('static', filename='xlsx.full.min.js')}}"></script>
+
     <style>
         body {
             background-color: #f5f5f5;
@@ -111,11 +113,14 @@
                             <div class="col s6">
                                 <h5>Talabalar ro'yxati</h5>
                             </div>
+                            <div class="col s6">
+                                <button onclick="exportToExcel()">Export to Excel</button>
+                            </div>
                             <div class="col s6 right-align">
                                 <span style="font-weight: bold;">Dars ID:</span> <span id="lesson_id">---</span>
                             </div>
                         </div>
-                        <table class="striped">
+                        <table class="striped" id="myTable">
                             <thead>
                                 <tr>
                                     <th>№</th>
@@ -289,12 +294,12 @@
                 }
             }
 
-            // Sahifa yuklanganda, agar oldingi jurnal yaratilgan bo'lsa, davomatni yuklash
-            // Bu qism session storage yoki local storage bilan bog'liq bo'lishi mumkin.
-            // Hozircha bu funksionallikni to'liq implementatsiya qilmadik.
-            // Agar sahifa yangilansa, o'qituvchi yana jurnal yaratishi kerak bo'ladi.
-            // Agar avtomatik yuklashni xohlasangiz, lesson_idni local storage ga saqlashingiz kerak.
         });
+        function exportToExcel() {
+        const table = document.getElementById("myTable");
+        const workbook = XLSX.utils.table_to_book(table, { sheet: "Jadval1" });
+        XLSX.writeFile(workbook, "jadval.xlsx");
+        }
     </script>
 </body>
 </html>

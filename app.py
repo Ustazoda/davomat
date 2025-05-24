@@ -17,7 +17,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 token = randint(1000000000, 9999999999)
 print(f"Initial API Token: {token}")
 
-COOLDOWN_SECONDS = 30                         # Example: 30 seconds cooldown
+COOLDOWN_SECONDS = 30  # Example: 30 seconds cooldown
 COOLDOWN_COOKIE_NAME = "post_cooldown"
 
 # Cooldown for student registration per lesson (15 minutes)
@@ -74,13 +74,8 @@ def get_qr_data_for_lesson(lesson_id, qr_token):
     # The qr_token makes the QR code content unique and allows it to be "refreshed".
     return f"http://{request.host}/student/register/{lesson_id}/{qr_token}"
 
-# Existing Routes
-@app.route('/')
-def index():
-    return jsonify({"message": "Hello, World!"})
-
 # New Routes for Teacher Dashboard
-@app.route('/teacher')
+@app.route('/')
 def teacher_dashboard():
     return render_template('index.html')
 
@@ -256,6 +251,3 @@ if __name__ == '__main__':
     # The host '0.0.0.0' makes it accessible on your network
     # The port 8000 matches what's in index.html
     socketio.run(app, host='0.0.0.0', port=8000, debug=True, use_reloader=True)
-
-
-# salom

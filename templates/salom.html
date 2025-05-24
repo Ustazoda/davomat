@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jadvalni Excelga eksport qilish</title>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Oddiy Jadval</h2>
+
+  <table id="myTable">
+    <thead>
+      <tr>
+        <th>Ism</th>
+        <th>Familiya</th>
+        <th>Yosh</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ali</td>
+        <td>Karimov</td>
+        <td>25</td>
+      </tr>
+      <tr>
+        <td>Laylo</td>
+        <td>Yusupova</td>
+        <td>30</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br>
+
+  <button onclick="exportToExcel()">Excelga eksport qilish</button>
+
+  <script>
+    function exportToExcel() {
+      const table = document.getElementById("myTable");
+      const workbook = XLSX.utils.table_to_book(table, { sheet: "Jadval1" });
+      XLSX.writeFile(workbook, "jadval.xlsx");
+    }
+  </script>
+
+</body>
+</html>
